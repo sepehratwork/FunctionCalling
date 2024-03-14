@@ -14,7 +14,7 @@ def read_form():
 
 @app.get("/get_prompt")
 def get_prompt(prompt: Request):
-    result = "Type a prompt"
+    result = ""
     return templates.TemplateResponse('prompt.html', context={'request': prompt, 'result': result})
 
 
