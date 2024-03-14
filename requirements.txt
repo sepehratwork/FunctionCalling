@@ -1,5 +1,5 @@
 fastapi
 openai
 jinja2
-"uvicorn[standard]"
+uvicorn[standard]
 uvicorn
