@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
+from function_calling import FunctionCalling
 
 
 app = FastAPI()
@@ -12,12 +13,12 @@ def read_form():
 
 
 @app.get("/get_prompt")
-def get_prompt(request: Request):
-    result = "Type a number"
+def get_prompt(prompt: Request):
+    result = "Type a prompt"
+    return templates.TemplateResponse('prompt.html', context={'request': prompt, 'result': result})
+
+
+@app.post("/prompt_response")
+def prompt_response(request: Request, result: str):
+    result = FunctionCalling.get_response(result)
     return templates.TemplateResponse('prompt.html', context={'request': request, 'result': result})
-
-
-# @app.post("/prompt_response")
-# def prompt_response(request: Request, num: int = Form(...)):
-#     result = spell_number(num)
-#     return templates.TemplateResponse('prompt.html', context={'request': request, 'result': result})
