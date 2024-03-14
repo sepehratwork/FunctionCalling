@@ -2,7 +2,8 @@ from openai import OpenAI
 import requests
 # from tenacity import retry, wait_random_exponential, stop_after_attempt
 # from termcolor import colored 
-from functions import functions
+from function_calling import functions
+
 
 api_key="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"
 
@@ -18,7 +19,7 @@ def get_response(user_prompt, functions, model, function_call):
         response = client.chat.completions.create(
             model = model,
             messages = [{'role': 'user', 'content': user_prompt}],
-            functions = functions,
+            functions = functions.functions,
             function_call = function_call
         )
         return response.choices[0].message.function_call.arguments
