@@ -5,7 +5,7 @@ import requests
 from function_calling import functions
 
 
-api_key="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"
+api_key=""
 
 # GPT_MODEL_3 = "gpt-3.5-turbo-0125"
 GPT_MODEL_3 = "gpt-3.5-turbo-0613"
