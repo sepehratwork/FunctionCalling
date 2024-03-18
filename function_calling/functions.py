@@ -14,11 +14,15 @@ Returns a number between -2 and 2 that represents the trend’s intensity and di
                     "enum": ['NQ', 'ES', 'GC', 'YM', 'RTY', 'CL'],
                     "description": '''The ticker symbol of the financial instrument to be analyzed.'''
                 },
-                "timerange": {
+                "start_datetime": {
                     "type": "string",
                     "format": "date-time",
-                    # "enum": ["hours", "days", "weeks", "months", "years"],
-                    "description": '''The period over which the analysis is done.  This value should have a start (e.g. 3/10/2023 15:45:30) and an end(e.g. 3/10/2023 17:25:20)'''
+                    "description": '''The start timestamp of period over which the analysis is done. (e.g. 3/10/2023 15:45:30)'''
+                },
+                "end_datetime": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": '''The end timestamp of period over which the analysis is done. (e.g. 3/10/2023 15:45:30)'''
                 }
             },
             "required": ["symbol"]
@@ -37,17 +41,16 @@ The function returns a boolean value which is true if the chart visualization is
                 "symbol": {
                     "type": "string",
                     "enum": ['NQ', 'ES', 'GC', 'YM', 'RTY', 'CL'],
-                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                    "description": '''The ticker symbol of the financial instrument to be analyzed. The only allowed values for symbols are: NQ, ES, GC, CL, YM, RTY. Complete form of each symbol is as follows: NQ: E-mini Nasdaq-100, ES: E-mini S&P 500, GC: E-mini Gold, YM: E-mini Dow Jones Industrial Average Index, RTY: E-mini Russell 2000 Index, CL: E-mini Crude Oil'''
                 },
                 "timerange": {
-                    "type": "string",
+                    "type": "array",
+                    "items": {"type": "string"},
                     "format": "date-time",
-                    # "enum": ["hours", "days", "weeks", "months", "years"],
                     "description": '''The period over which the analysis is done. This value should have a start (e.g. 3/10/2023 15:45:30) and an end(e.g. 3/10/2023 17:25:20)'''
                 },
                 "trend": {
                     "type": "integer",
-                    # "enum": [],
                     "minimum": -2,
                     "maximum": 2,
                     "description": '''The trend to show on the chart which is an integer between -2 and 2.'''
@@ -69,7 +72,7 @@ Returns True if the operation is successful and False otherwise.",
                 "symbol": {
                     "type": "string",
                     "enum": ['NQ', 'ES', 'GC', 'YM', 'RTY', 'CL'],
-                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                    "description": '''The ticker symbol of the financial instrument to be analyzed. The only allowed values for symbols are: NQ, ES, GC, CL, YM, RTY. Complete form of each symbol is as follows: NQ: E-mini Nasdaq-100, ES: E-mini S&P 500, GC: E-mini Gold, YM: E-mini Dow Jones Industrial Average Index, RTY: E-mini Russell 2000 Index, CL: E-mini Crude Oil'''
                 },
                 "direction": {
                     "type": "string",
@@ -87,8 +90,7 @@ Returns True if the operation is successful and False otherwise.",
                     "description": '''The specific price at which a limit order is to be executed. This parameter is required if the type is ‘limit’. For market orders, this parameter is not applicable.'''
                 },
                 "size": {
-                    "type": "integer",
-                    # "enum": [],
+                    "type": "number",
                     "description": '''The size of the position, often referred to as the lot size. This denotes the quantity of the instrument to be traded.'''
                 },
                 "sl": {
@@ -130,7 +132,6 @@ Returns a dictionary containing four lists, each corresponding to a specific asp
                 },
                 "timeframe": {
                     "type": "string",
-                    # "enum": ["days", "hours"],
                     "description": '''Specifies the timeframe of the candlestick chart to be analyzed. This parameter defines the granularity of the data used for calculating the levels.'''
                 },
                 "lookback_days": {
@@ -163,109 +164,117 @@ Returns a dictionary containing three lists, each representing a different aspec
                 },
                 "timerange": {
                     "type": "array",
-                    "items": {"type": "integer"},
+                    "items": {"type": "string"},
                     "format": "date-time",
-                    # "enum": ["hours", "days", "weeks", "months", "years"],
                     "description": '''The period over which the analysis is done. This value should have a start (e.g. 3/10/2023 15:45:30) and an end(e.g. 3/10/2023 17:25:20)'''
                 },
                 "news_type": {
                     "type": "string",
-                    # "enum": [],
                     "description": '''The specific type of news to be analyzed (e.g., ‘earnings report’, ‘federal announcement’). This parameter is optional and, if provided, filters the news to the specified type. If not specified, the function analyzes all types of high-impact news.'''
                 }
             },
-            "required": ["symbol"]
+            "required": ["symbol", "timerange", "news_type"]
         }
     },
 
 
-#     ######### Gap Detection #########
-#     {
-#         "name": "gap_detection",
-#         "description": "Products opened with gap and the gap status right now. \
-# For example, ES and NQ opened with gap today, ES with gap of 10 points and NQ with gap of 5 points. \
-# The gap on ES is filled at 9:20:00 am and the gap on NQ is partially filled (2 points out of 5). \
-# Output of the function can be like this: {'ES': [10,10,'09:20:00'], 'NQ': [5,2,'']} \
-# Returns list of symbols and gaps size for each.",
-#         "parameters": {
-#             "type": "object",
-#             "properties": {
-#                 "symbol": {
-#                     "type": "array",
-#                     "items": {"type": "string"},
-#                     "enum": ['NQ', 'ES', 'GC', 'YM', 'RTY', 'CL'],
-#                     "description": '''The ticker symbol list of the financial instruments to be analyzed. The only allowed values for symbols are: NQ, ES, GC, CL, YM, RTY. Complete form of each symbol is as follows: NQ: E-mini Nasdaq-100, ES: E-mini S&P 500, GC: E-mini Gold, YM: E-mini Dow Jones Industrial Average Index, RTY: E-mini Russell 2000 Index, CL: E-mini Crude Oil'''
-#                 },
-#                 "date": {
-#                     "type": "date-time",
-#                     "description": '''Specifies the date that the analyzis will be done. Default is today'''
-#                 }
-#             },
-#             "required": ["symbol", "date"]
-#         }
-#     },
+    ######### Gap Detection #########
+    {
+        "name": "gap_detection",
+        "description": "Products opened with gap and the gap status right now. \
+For example, ES and NQ opened with gap today, ES with gap of 10 points and NQ with gap of 5 points. \
+The gap on ES is filled at 9:20:00 am and the gap on NQ is partially filled (2 points out of 5). \
+Output of the function can be like this: {'ES': [10,10,'09:20:00'], 'NQ': [5,2,'']} \
+Returns list of symbols and gaps size for each.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "enum": ['NQ', 'ES', 'GC', 'YM', 'RTY', 'CL'],
+                    "description": '''The ticker symbol list of the financial instruments to be analyzed. The only allowed values for symbols are: NQ, ES, GC, CL, YM, RTY. Complete form of each symbol is as follows: NQ: E-mini Nasdaq-100, ES: E-mini S&P 500, GC: E-mini Gold, YM: E-mini Dow Jones Industrial Average Index, RTY: E-mini Russell 2000 Index, CL: E-mini Crude Oil'''
+                },
+                "date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": '''Specifies the date that the analyzis will be done. Default is today.'''
+                }
+            },
+            "required": ["symbol", "date"]
+        }
+    },
 
 
-#     ######### Higher Timeframe Confluence #########
-#     {
-#         "name": "htf_confluence",
-#         "description": "Check confluence on higher timeframes. \
-# If the trend on each of the upper timeframes is the same as input direction, it's considered as a confluence, otherwise as a contradiction.",
-#         "parameters": {
-#             "type": "object",
-#             "properties": {
-#                 "symbol": {
-#                     "type": "string",
-#                     "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
-#                     "description": '''The ticker symbol of the financial instrument to be analyzed.'''
-#                 },
-#                 "higher_timeframes": {
-#                     "type": "array",
-#                     "items": {"type": "integer"},
-#                     "description": '''The period over which the analysis is done'''
-#                 }
-#             },
-#             "required": ["symbol"]
-#         }
-#     },
+    ######### Higher Timeframe Confluence #########
+    {
+        "name": "htf_confluence",
+        "description": "Check confluence on higher timeframes. If the trend on each of the upper timeframes is the same as input direction, it's considered as a confluence, otherwise as a contradiction. \
+Returns a dictionary with keys to be timeframe and values to be trend values based on integer values from -3 to 3. Example: {'1min': 3, '5min': 2, '1hour': -2}",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "string",
+                    "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
+                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                },
+                "higher_timeframes": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": '''Specifies the list of candlestick timeframes to be analyzed. The default timeframes are 5min, 15min, 1hour, and 4hour.'''
+                }
+            },
+            "required": ["symbol", "higher_timeframes"]
+        }
+    },
 
 
-#     ######### Level Analysis #########
-#     {
-#         "name": "level_analysis",
-#         "description": "Giving an analysis of most important levels in the current market based on the real-time reactions. \
-# Returns a text output explaining the most important current level based on last price reactions if the level is breaking or holding in the last 5 minutes. \
-# If there was no recent reaction, explain what are the nearest levels above and below the current price.",
-#         "parameters": {
-#             "type": "object",
-#             "properties": {
-#                 "symbol": {
-#                     "type": "string",
-#                     "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
-#                     "description": '''The ticker symbol of the financial instrument to be analyzed.'''
-#                 }
-#             },
-#             "required": ["symbol"]
-#         }
-#     },
+    ######### Level Analysis #########
+    {
+        "name": "level_analysis",
+        "description": "Giving an analysis of most important levels in the current market based on the real-time reactions. The levels to be analyzed: \
+weekly_SR_values, daily_SR_values, hourly_SR_values, \
+5min_SR_values, VP_POC, VP_VAH, VP_VAL, Overnight_high, Overnight_low, Overnight_mid, prev_session_mid, \
+prev_session_max, prev_session_min, Major_liquidity_price, initial_balance_low, initial_balance_high, MC_VAL, MC_VAH, MC_POC. \
+Returns Dictionary including the most important current levels based on last price reactions if the level is breaking or holding in the lookback_time (for example last 5min). If there was no recent reaction, include what are the nearest levels above and below the current price. Example: {'VP_POC': [('hold-1', ts), ('hold-1', ts), 'VWAP': [('break+1', ts)], 'weekly_SR_2035.25': [('hold+1', ts)]}. Another example in case that there was no reaction on any level: {'nearest below level': ('VWAP', -2.25p), 'nearest above level': ('MC_POC', +5.75p)}",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "string",
+                    "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
+                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                },
+                "lookback_time": {
+                    "type": "string",
+                    "description": '''The lookback time range that the level analysis is done, examples: 1min, 5min, 10min, 1hour'''
+                }
+            },
+            "required": ["symbol", "lookback_time"]
+        }
+    },
 
 
-#     ######### Limit Order Book Analysis #########
-#     {
-#         "name": "lob_analysis",
-#         "description": "Giving the relative status of bid and ask sides in the order book and also provide insights on liquiditiy levels reactions and fillings. \
-# Returns Float output for bid / ask lob ratio. Also a text output explaining the most important current liquidity level based on last price reactions if the level is breaking or holding in the last 5 minutes. \
-# If there was no recent reaction, explain what are the nearest liquidity levels above and below the current price.",
-#         "parameters": {
-#             "type": "object",
-#             "properties": {
-#                 "symbol": {
-#                     "type": "string",
-#                     "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
-#                     "description": '''The ticker symbol of the financial instrument to be analyzed.'''
-#                 }
-#             },
-#             "required": ["symbol"]
-#         }
-#     }
+    ######### Limit Order Book Analysis #########
+    {
+        "name": "lob_analysis",
+        "description": "Giving the relative status of bid and ask sides in the order book and also provide insights on liquiditiy levels reactions and fillings. \
+Returns a float output for bid / ask lob ratio. Also a dictionary including the recent actions on near-by liquidity levels (based on proximity parameter). Example: {2034.75: ('filled', ts), 2044.00: ('removed', ts)}",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "string",
+                    "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
+                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                },
+                "proximity_parameter_in_terms_of_points_or_percentage": {
+                    "type": "string",
+                    "description": '''Specifices the price range for which the bid / ask lob ratio and is calculated and near-by levels are considered. Examples: 5p, 2%. If nothing is provided, the default value will be 2%.'''
+                }
+            },
+            "required": ["symbol", "proximity_parameter_in_terms_of_points_or_percentage"]
+        }
+    }
 ]
