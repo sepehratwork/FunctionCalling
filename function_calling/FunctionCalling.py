@@ -5,7 +5,7 @@ import requests
 from function_calling import functions
 
 
-api_key=""
+api_key="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"
 
 # GPT_MODEL_3 = "gpt-3.5-turbo-0125"
 GPT_MODEL_3 = "gpt-3.5-turbo-0613"
@@ -26,3 +26,8 @@ def get_response(user_prompt, functions, model, function_call):
     except Exception as e:
         print("Unable to generate ChatCompletion response")
         print(f"Exception: {e}")
+
+
+def generate_response(user_prompt):
+    output = get_response(user_prompt, functions, model=GPT_MODEL_3, function_call="auto")
+    return output

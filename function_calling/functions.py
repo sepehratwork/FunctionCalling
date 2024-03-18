@@ -16,8 +16,9 @@ Returns a number between -2 and 2 that represents the trend’s intensity and di
                 },
                 "timerange": {
                     "type": "string",
+                    "format": "date-time",
                     # "enum": ["hours", "days", "weeks", "months", "years"],
-                    "description": '''The period over which the analysis is done'''
+                    "description": '''The period over which the analysis is done.  This value should have a start (e.g. 3/10/2023 15:45:30) and an end(e.g. 3/10/2023 17:25:20)'''
                 }
             },
             "required": ["symbol"]
@@ -25,7 +26,7 @@ Returns a number between -2 and 2 that represents the trend’s intensity and di
     },
 
 
-        ######### Trend Visualization #########
+    ######### Trend Visualization #########
     {
         "name": "show_trend",
         "description": "The function shows the trend of a specified financial instrument over a given time range on the chart. \
@@ -40,8 +41,9 @@ The function returns a boolean value which is true if the chart visualization is
                 },
                 "timerange": {
                     "type": "string",
+                    "format": "date-time",
                     # "enum": ["hours", "days", "weeks", "months", "years"],
-                    "description": '''The period over which the analysis is done'''
+                    "description": '''The period over which the analysis is done. This value should have a start (e.g. 3/10/2023 15:45:30) and an end(e.g. 3/10/2023 17:25:20)'''
                 },
                 "trend": {
                     "type": "integer",
@@ -162,8 +164,9 @@ Returns a dictionary containing three lists, each representing a different aspec
                 "timerange": {
                     "type": "array",
                     "items": {"type": "integer"},
+                    "format": "date-time",
                     # "enum": ["hours", "days", "weeks", "months", "years"],
-                    "description": '''The period over which the analysis is done'''
+                    "description": '''The period over which the analysis is done. This value should have a start (e.g. 3/10/2023 15:45:30) and an end(e.g. 3/10/2023 17:25:20)'''
                 },
                 "news_type": {
                     "type": "string",
@@ -173,6 +176,94 @@ Returns a dictionary containing three lists, each representing a different aspec
             },
             "required": ["symbol"]
         }
-    }
+    },
 
+
+    ######### Gap Detection #########
+    {
+        "name": "gap_detection",
+        "description": "Products opened with gap and the gap status right now. \
+For example, ES and NQ opened with gap today, ES with gap of 10 points and NQ with gap of 5 points. \
+The gap on ES is filled at 9:20:00 am and the gap on NQ is partially filled (2 points out of 5). \
+Output of the function can be like this: {'ES': [10,10,'09:20:00'], 'NQ': [5,2,'']} \
+Returns list of symbols and gaps size for each.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": '''The ticker symbol list of the financial instruments to be analyzed. The only allowed values for symbols are: NQ, ES, GC, CL, YM, RTY. Complete form of each symbol is as follows: NQ: E-mini Nasdaq-100, ES: E-mini S&P 500, GC: E-mini Gold, YM: E-mini Dow Jones Industrial Average Index, RTY: E-mini Russell 2000 Index, CL: E-mini Crude Oil'''
+                },
+                "date": {
+                    "type": "array",
+                    "description": '''The period over which the analysis is done'''
+                }
+            },
+            "required": ["date"]
+        }
+    },
+
+
+    ######### Higher Timeframe Confluence #########
+    {
+        "name": "htf_confluence",
+        "description": "Check confluence on higher timeframes. \
+If the trend on each of the upper timeframes is the same as input direction, it's considered as a confluence, otherwise as a contradiction.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "string",
+                    "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
+                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                },
+                "higher_timeframes": {
+                    "type": "array",
+                    "description": '''The period over which the analysis is done'''
+                }
+            },
+            "required": ["symbol"]
+        }
+    },
+
+
+    ######### Level Analysis #########
+    {
+        "name": "level_analysis",
+        "description": "Giving an analysis of most important levels in the current market based on the real-time reactions. \
+Returns a text output explaining the most important current level based on last price reactions if the level is breaking or holding in the last 5 minutes. \
+If there was no recent reaction, explain what are the nearest levels above and below the current price.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "string",
+                    "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
+                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                }
+            },
+            "required": ["symbol"]
+        }
+    },
+
+
+    ######### Limit Order Book Analysis #########
+    {
+        "name": "lob_analysis",
+        "description": "Giving the relative status of bid and ask sides in the order book and also provide insights on liquiditiy levels reactions and fillings. \
+Returns Float output for bid / ask lob ratio. Also a text output explaining the most important current liquidity level based on last price reactions if the level is breaking or holding in the last 5 minutes. \
+If there was no recent reaction, explain what are the nearest liquidity levels above and below the current price.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "symbol": {
+                    "type": "string",
+                    "enum": ["NQ", "ES", "GC", "CL", "YM", "RTY"],
+                    "description": '''The ticker symbol of the financial instrument to be analyzed.'''
+                }
+            },
+            "required": ["symbol"]
+        }
+    }
 ]
