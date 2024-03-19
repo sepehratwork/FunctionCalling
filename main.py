@@ -7,7 +7,6 @@ import uvicorn
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates/")
-messages = []
 messages.append({"role": "system", "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."})
 
 
@@ -26,6 +25,8 @@ def read_form():
 
 @app.get("/get_prompt")
 def get_prompt(prompt: Request):
+    messages = []
+    messages.append({"role": "system", "content": "Don't make assumptions about what values to plug into functions. Ask for clarification if a user request is ambiguous."})
     messages.append({"role": "user", "content": prompt})
     chat_response = generate_response(
         messages, functions, GPT_MODEL_3, "auto"
